@@ -3,7 +3,7 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pandas-timeinterval"
+name = "pandas_timeinterval"
 version = "1.1.0"
 description = "A package to trim datetime indexed DataFrames and Series in pandas."
 authors = [
@@ -21,9 +21,6 @@ classifiers = [
 dependencies = [
     "pandas>=1.0"
 ]
-
-[tool.setuptools.packages.find]
-where = ["pandas_timeinterval"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
