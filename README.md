@@ -28,4 +28,12 @@ from pandas_timeinterval import Intervals
 df_trimed = Intervals.from_bools(df['sine_wave'] > 0.707 | df['sine_wave'] < -0.707).contract('50s').trim(df)
 ```
 
+## Development
 
+### Setting up Pre-Commit Hooks
+
+```bash
+pip install pre-commit
+pre-commit install
+pre-commit run --all-files # optional
+```
