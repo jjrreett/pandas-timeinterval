@@ -1,0 +1,1 @@
+from pandas_timeinterval import Intervals, Interval
