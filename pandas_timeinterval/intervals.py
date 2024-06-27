@@ -3,18 +3,19 @@ from __future__ import annotations
 import typing
 from collections import deque
 from dataclasses import dataclass
-from typing import Iterable, NamedTuple, Optional, Tuple
+from typing import Iterable, NamedTuple, Optional, Tuple, List, Union, Sequence
 
 import pandas as pd
 from pandas._libs.tslibs.nattype import NaTType
 
 dt = pd.Timedelta
 Data = typing.TypeVar("Data", pd.DataFrame, pd.Series)
+Time = Union[pd.Timestamp, pd._libs.tslibs.nattype.NaTType]
 
 
 class Interval(NamedTuple):
-    start: pd.Timestamp
-    end: pd.Timestamp
+    start: Time
+    end: Time
 
     def trim(self, data: Data) -> Data:
         """
@@ -29,7 +30,8 @@ class Interval(NamedTuple):
         """
         start = None if pd.isnull(self.start) else self.start
         end = None if pd.isnull(self.end) else self.end
-        return data.truncate(before=start, after=end)
+        data_truncated = data.truncate(before=start, after=end)
+        return data_truncated
 
     def adjust_start(self, delta: dt) -> Interval:
         return Interval(start=self.start + delta, end=self.end)
@@ -41,10 +43,10 @@ class Interval(NamedTuple):
         if direction not in ["same", "opposite"]:
             raise ValueError("direction must be either 'same' or 'opposite'")
 
-        direction = 1 if direction == "same" else -1
+        direction_int: int = 1 if direction == "same" else -1
 
         new_start = self.start + delta
-        new_end = self.end + (direction * delta)
+        new_end = self.end + (direction_int * delta)
 
         return Interval(start=new_start, end=new_end)
 
@@ -112,7 +114,7 @@ class Interval(NamedTuple):
 class Intervals:
     intervals: Tuple[Interval]
 
-    def __init__(self, intervals: Optional[Iterable[Iterable[pd.Timestamp]]] = None):
+    def __init__(self, intervals: Optional[Iterable[Sequence[Time]]] = None):
         """
         Initialize the Intervals object with a sequence of iterables, each containing two pandas Timestamps.
         Timestamps can be None or pandas NaT to represent open-ended intervals.
@@ -126,8 +128,10 @@ class Intervals:
         ValueError: If the input does not implement an iterable interface, if any interval
                     does not contain exactly 2 elements, or if the elements are not Timestamps.
         """
-        if intervals is None:
-            intervals = [(pd.NaT, pd.NaT)]
+
+        intervals: Iterable[Sequence[Time]] = (
+            intervals if intervals is not None else [(pd.NaT, pd.NaT)]
+        )
 
         if not isinstance(intervals, Iterable):
             raise ValueError(
@@ -136,9 +140,9 @@ class Intervals:
                 )
             )
 
-        self.intervals = []
+        _intervals: List[Interval] = []
         for interval in intervals:
-            if not isinstance(interval, Iterable) or len(interval) != 2:
+            if not isinstance(interval, Sequence) or len(interval) != 2:
                 raise ValueError(
                     "Each interval must be an iterable containing exactly two elements. ({})".format(
                         "interval={}".format(interval)
@@ -160,11 +164,11 @@ class Intervals:
                     )
                 )
 
-            self.intervals.append(Interval(start, end))
+            _intervals.append(Interval(start, end))
 
-        self.intervals = tuple(self.intervals)
+        self.intervals = tuple(_intervals)
 
-    def add_interval(self, start: pd.Timestamp, end: pd.Timestamp) -> Intervals:
+    def add_interval(self, start: Time, end: Time) -> Intervals:
         """
         Add a new datetime pair to the list.
 
