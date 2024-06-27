@@ -60,4 +60,4 @@ jobs:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: pypi-${{ secrets.PYPI_TOKEN }}
       run: |
-        twine upload -r testpypi dist/*
+        twine upload dist/*
