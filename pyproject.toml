@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pandas-timeinterval"
+version = "1.1.0"
+description = "A package to trim datetime indexed DataFrames and Series in pandas."
+authors = [
+    { name = "Jarrett Bullion", email = "jjrreett@gmail.com" }
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = ["pandas", "datetime", "intervals", "dataframes"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pandas>=1.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["pandas_timeinterval"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
