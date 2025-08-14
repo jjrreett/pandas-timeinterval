@@ -3,7 +3,16 @@ from __future__ import annotations
 import typing
 from collections import deque
 from dataclasses import dataclass
-from typing import Iterable, NamedTuple, Optional, Tuple, List, Union, Sequence
+from typing import (
+    Iterable,
+    NamedTuple,
+    Optional,
+    Tuple,
+    List,
+    Union,
+    Sequence,
+    overload,
+)
 
 import pandas as pd
 from pandas._libs.tslibs.nattype import NaTType
@@ -17,8 +26,12 @@ class Interval(NamedTuple):
     start: Time
     end: Time
 
+    @overload
+    def trim(self, data: pd.DataFrame) -> pd.DataFrame: ...
+    @overload
+    def trim(self, data: pd.Series) -> pd.Series: ...
     def trim(self, data: Data) -> Data:
-        """
+        f"""
         Trim a DataFrame or Series to only include rows within the intervals specified in a {self.__class__.__name__} object.
 
         Parameters:
@@ -320,7 +333,11 @@ class Intervals:
     def symmetric_difference(self, other):
         raise NotImplementedError
 
-    def trim(self, data: pd.DataFrame | pd.Series) -> pd.DataFrame | pd.Series:
+    @overload
+    def trim(self, data: pd.DataFrame) -> pd.DataFrame: ...
+    @overload
+    def trim(self, data: pd.Series) -> pd.Series: ...
+    def trim(self, data: Data) -> Data:
         """
         Trim a DataFrame or Series to only include rows within the intervals specified in a {self.__class__.__name__} object.
 
