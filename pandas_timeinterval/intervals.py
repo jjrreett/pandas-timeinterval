@@ -5,12 +5,12 @@ from collections import deque
 from dataclasses import dataclass
 from typing import (
     Iterable,
+    List,
     NamedTuple,
     Optional,
-    Tuple,
-    List,
-    Union,
     Sequence,
+    Tuple,
+    Union,
     overload,
 )
 
@@ -485,7 +485,7 @@ class Intervals:
             )
         return self.difference(right)
 
-    def __or__(self, right: Intervals) -> bool:
+    def __or__(self, right: Intervals) -> Intervals:
         if not isinstance(right, Intervals):
             raise ValueError(
                 "Cannot perform union of {} with <{}> {}".format(
@@ -494,7 +494,7 @@ class Intervals:
             )
         return self.union(right)
 
-    def __and__(self, right: Intervals) -> bool:
+    def __and__(self, right: Intervals) -> Intervals:
         if not isinstance(right, Intervals):
             raise ValueError(
                 "Cannot perform intersection of {} with <{}> {}".format(
@@ -503,7 +503,12 @@ class Intervals:
             )
         return self.intersection(right)
 
-    def __getitem__(self, a: int):
+    @overload
+    def __getitem__(self, a: int) -> Interval: ...
+    @overload
+    def __getitem__(self, a: slice) -> tuple[Interval, ...]: ...
+
+    def __getitem__(self, a: int | slice) -> Interval | tuple[Interval, ...]:
         return self.intervals[a]
 
     def __iter__(self):
