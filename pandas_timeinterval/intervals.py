@@ -514,26 +514,17 @@ class Intervals:
     def __iter__(self):
         return iter(self.intervals)
 
-    # def __repr__(self):
-    #     """
-    #     Return a string representation of the {self.__class__.__name__} instance.
-    #     """
-    #     return f"{self.__class__.__name__}({self.intervals})"
-
-    #     def __rich__(self):
-    #         return f"""\
-    # {self.__class__.__name__}(
-    #     {pformat(self.intervals)}
-    # )"""
+    def __str__(self) -> str:
+        items = ",\n    ".join(
+            f"({i.start!r} -> {i.end - i.start})" for i in self.intervals
+        )
+        return f"{self.__class__.__name__}([\n    {items}\n])"
 
     def repr_start_duration(self):
-        intervals = "\n    ".join(
-            "('{}' -> '{}')".format(i.start, i.end - i.start) for i in self.intervals
+        items = ",\n    ".join(
+            f"({i.start!r} -> {i.end - i.start})" for i in self.intervals
         )
-        return """\
-{}(
-    {}
-)""".format(self.__class__.__name__, intervals)
+        return f"{self.__class__.__name__}([\n    {items}\n])"
 
     def len(self):
         return len(self.intervals)
